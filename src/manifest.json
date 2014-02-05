@@ -1,0 +1,20 @@
+{
+  "name": "pplog",
+  "description": "pplog",
+  "version": "0.0.1",
+  "app": {
+    "background": {
+      "scripts": [
+        "js/background.js"
+      ]
+    }
+  },
+  "permissions": [
+    "webview"
+  ],
+  "icons": {
+    "16": "image/icon_16.png",
+    "128": "image/icon_128.png"
+  },
+  "offline_enabled": true
+}
