@@ -1,3 +1,5 @@
+NProgress.configure({ showSpinner: false });
+
 var resize_content = function() {
   var content = document.getElementById('content');
   content.style.width  = (window.document.documentElement.clientWidth  - 16) + 'px'
@@ -18,8 +20,11 @@ window.onload   = function() {
       case 70: webview.executeScript({ code: "location.pathname = '/zapping';" }); break;
       //  D: did read
       case 68:
+        NProgress.start();
         webview.executeScript({
           code: "document.getElementsByClassName('post-star')[0].click();"
+        }, function(result) {
+          NProgress.done();
         });
         break;
     }
@@ -29,6 +34,9 @@ window.onload   = function() {
     e.preventDefault();
     window.open(e.targetUrl)
   });
+
+  webview.addEventListener("loadstart", NProgress.start);
+  webview.addEventListener("loadstop", NProgress.done);
 
 }
 window.onresize = resize_content;
