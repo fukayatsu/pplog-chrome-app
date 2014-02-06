@@ -14,19 +14,24 @@ window.onload   = function() {
     if (!event.ctrlKey && !event.metaKey) { return; }
 
     switch(key) {
-      //  R: reload
-      case 82: webview.reload(); break;
-      //  F: zapping
-      case 70: webview.executeScript({ code: "location.pathname = '/zapping';" }); break;
-      //  D: did read
-      case 68:
-        NProgress.start();
-        webview.executeScript({
-          code: "document.getElementsByClassName('post-star')[0].click();"
-        }, function(result) {
-          NProgress.done();
-        });
-        break;
+    case 82: //  R: reload
+      webview.reload(); break;
+
+    case 70: //  F: zapping
+      // webview.executeScript({ code: "location.pathname = '/zapping';" }); break;
+      webview.executeScript({
+        code: "document.getElementsByClassName('zapping-button')[0].getElementsByTagName('a')[0].click();"
+      });
+      break;
+
+    case 68: //  D: did read
+      NProgress.start();
+      webview.executeScript({
+        code: "document.getElementsByClassName('post-star')[0].click();"
+      }, function(result) {
+        NProgress.done();
+      });
+      break;
     }
   });
 
