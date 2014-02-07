@@ -1,7 +1,7 @@
 {
   "name": "pplog",
   "description": "pplog",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "app": {
     "background": {
       "scripts": [
@@ -10,11 +10,15 @@
     }
   },
   "permissions": [
-    "webview"
+    "webview",
+    "notifications",
+    "https://www.pplog.net/*"
+    // "https://dltvadzlmcsl3.cloudfront.net/*"
+    // "<all_urls>"
   ],
   "icons": {
     "16": "image/icon_16.png",
     "128": "image/icon_128.png"
   },
-  "offline_enabled": true
+  "offline_enabled": false
 }
