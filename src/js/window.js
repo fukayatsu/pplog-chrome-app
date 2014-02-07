@@ -11,19 +11,19 @@ window.onload   = function() {
   var webview = document.getElementById("webview");
   document.addEventListener("keydown" , function(event) {
     var key = event.keyCode || event.charCode || 0;
-    if (!event.ctrlKey && !event.metaKey) { return; }
+    // if (!event.ctrlKey && !event.metaKey) { return; }
+    if (event.target.id != 'app_body') { return; }
 
     switch(key) {
     case 82: //  R: reload
-      webview.reload(); break;
-
+      webview.reload();
+      break;
     case 70: //  F: zapping
-      // webview.executeScript({ code: "location.pathname = '/zapping';" }); break;
+    case 90: //  Z: zapping
       webview.executeScript({
         code: "document.getElementsByClassName('zapping-button')[0].getElementsByTagName('a')[0].click();"
       });
       break;
-
     case 68: //  D: did read
       NProgress.start();
       webview.executeScript({
@@ -32,6 +32,14 @@ window.onload   = function() {
         NProgress.done();
       });
       break;
+    case 78: // new button
+      webview.executeScript({
+        code: "document.getElementsByClassName('new-btn')[0].click();"
+      });
+      break;
+    // case 27; // esc
+    // default:
+    //   console.log(event)
     }
   });
 
