@@ -75,18 +75,6 @@ window.onload = function() {
   document.addEventListener("keydown" , function(event) {
     var key = event.keyCode || event.charCode || 0;
     // if (!event.ctrlKey && !event.metaKey) { return; }
-    if (key == 80) {
-      sendNotification('', _.sample([
-        '٩( ˘ω˘ )و',
-        '₍₍ (̨̡ ‾᷄⌂‾᷅)̧̢ ₎₎',
-        '(εωз)',
-        'ポエ＼＼\\ ٩( ˘ω˘ )و //／／ポエ',
-        '₍₍ (̨̡ ˘ω˘)̧̢ ₎₎  ₍₍ (̨̡˘ω˘ )̧̢ ₎₎',
-        'ヾ(*’ω’*)ﾉﾞ',
-        '₍₍ (̨̡ ‾᷄⌂‾᷅)̧̢ ₎₎',
-        '|˘ω˘)"',
-      ]));
-    }
 
     if (event.target.id != 'app_body') { return; }
 
@@ -118,9 +106,19 @@ window.onload = function() {
         code: "document.getElementsByClassName('new-btn')[0].click();"
       });
       break;
+    case 80: // P
+      sendNotification('', _.sample([
+        '٩( ˘ω˘ )و',
+        '₍₍ (̨̡ ‾᷄⌂‾᷅)̧̢ ₎₎',
+        '(εωз)',
+        'ポエ＼＼\\ ٩( ˘ω˘ )و //／／ポエ',
+        '₍₍ (̨̡ ˘ω˘)̧̢ ₎₎  ₍₍ (̨̡˘ω˘ )̧̢ ₎₎',
+        'ヾ(*’ω’*)ﾉﾞ',
+        '₍₍ (̨̡ ‾᷄⌂‾᷅)̧̢ ₎₎',
+        '|˘ω˘)"',
+      ]));
+    break;
     // case 88: // x :debug
-    // case 80: // P
-    // break;
     // case 27; // esc
     // default:
     //   console.log(event)
