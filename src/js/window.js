@@ -17,6 +17,7 @@ chrome.notifications.onClicked.addListener(function(notificationId){
   webview.executeScript({
     code: "location.href = '" + notificationInfo['userpath'] + "'"
   });
+  chrome.app.window.current().focus();
 });
 
 var resizeContent = function() {
