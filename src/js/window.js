@@ -1,17 +1,90 @@
 NProgress.configure({ showSpinner: false });
 
-var resize_content = function() {
+var sendNotification = function(title, message, iconUrl) {
+  var notification = {
+    type:    "basic",
+    title:   title,
+    message: message,
+    iconUrl: iconUrl || "/image/icon_128.png"
+  }
+  chrome.notifications.create("", notification, function(notificationId){
+  });
+}
+
+chrome.notifications.onClicked.addListener(function(notificationId){
+  webview.executeScript({
+    code: "location.href = '" + sentNotifications[notificationId]['userpath'] + "'"
+  });
+});
+
+var resizeContent = function() {
   var content = document.getElementById('content');
   content.style.width  = (window.document.documentElement.clientWidth  - 16) + 'px'
   content.style.height = (window.document.documentElement.clientHeight - 16) + 'px'
 }
 
-window.onload   = function() {
-  resize_content;
-  var webview = document.getElementById("webview");
+var lastCheckedAt = new Date().getTime();
+var sentNotifications = {}
+var webview = null;
+
+var watchIndex = function() {
+  sentNotifications = {}
+  console.log('fetch index start');
+  NProgress.start();
+  webview.executeScript({
+    code: "xmlHttp = new XMLHttpRequest(); xmlHttp.open('GET', 'https://www.pplog.net/', false); xmlHttp.send(null); xmlHttp.responseText;"
+  }, function(result) {
+    console.log('fetch index done');
+    NProgress.done();
+    var html     = result[0];
+    var posts    = $('li.user.post-index', html.replace(/src/g, 'data-src'));
+    posts.each(function(){
+      var post = $(this);
+      var createdAt = post.find('.created-at').text().replace(/年|月/g, '/').replace(/日\(.\)/g, '')
+      var timestamp = Date.parse(createdAt);
+      if (timestamp < lastCheckedAt) {
+        return true; // continue;
+      }
+      var title     = post.find('.title').text().trim()
+      var image     = $(post.find('img')[0]).attr('data-src');
+      var username  = $(post.find('.user-name a')[0]).text();
+      var userpath  = $(post.find('.user-name a')[0]).attr('href');
+      var notification = {
+        type:    "basic",
+        title:   username,
+        message: title,
+        iconUrl: "/image/icon_128.png" // TODO: load image via xhr
+      }
+      chrome.notifications.create("", notification, function(notificationId){
+        sentNotifications[notificationId] = {
+          userpath: userpath
+        }
+      });
+    });
+    lastCheckedAt = new Date().getTime();
+  });
+}
+
+window.onresize = resizeContent;
+window.onload = function() {
+  resizeContent;
+  webview = document.getElementById("webview");
   document.addEventListener("keydown" , function(event) {
     var key = event.keyCode || event.charCode || 0;
     // if (!event.ctrlKey && !event.metaKey) { return; }
+    if (key == 80) {
+      sendNotification('', _.sample([
+        '٩( ˘ω˘ )و',
+        '₍₍ (̨̡ ‾᷄⌂‾᷅)̧̢ ₎₎',
+        '(εωз)',
+        'ポエ＼＼\\ ٩( ˘ω˘ )و //／／ポエ',
+        '₍₍ (̨̡ ˘ω˘)̧̢ ₎₎  ₍₍ (̨̡˘ω˘ )̧̢ ₎₎',
+        'ヾ(*’ω’*)ﾉﾞ',
+        '₍₍ (̨̡ ‾᷄⌂‾᷅)̧̢ ₎₎',
+        '|˘ω˘)"',
+      ]));
+    }
+
     if (event.target.id != 'app_body') { return; }
 
     switch(key) {
@@ -37,6 +110,9 @@ window.onload   = function() {
         code: "document.getElementsByClassName('new-btn')[0].click();"
       });
       break;
+    // case 88: // x :debug
+    // case 80: // P
+    // break;
     // case 27; // esc
     // default:
     //   console.log(event)
@@ -51,5 +127,5 @@ window.onload   = function() {
   webview.addEventListener("loadstart", NProgress.start);
   webview.addEventListener("loadstop", NProgress.done);
 
+  setInterval(watchIndex, 600 * 1000);
 }
-window.onresize = resize_content;
