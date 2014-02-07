@@ -13,8 +13,6 @@
     "webview",
     "notifications",
     "https://www.pplog.net/*"
-    // "https://dltvadzlmcsl3.cloudfront.net/*"
-    // "<all_urls>"
   ],
   "icons": {
     "16": "image/icon_16.png",
