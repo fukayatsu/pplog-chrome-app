@@ -97,6 +97,11 @@ window.onload = function() {
         code: "document.getElementsByClassName('zapping-button')[0].getElementsByTagName('a')[0].click();"
       });
       break;
+    case 72:// H: home
+       webview.executeScript({
+        code: "location.href='/';"
+      });
+      break;
     case 68: //  D: did read
       NProgress.start();
       webview.executeScript({
