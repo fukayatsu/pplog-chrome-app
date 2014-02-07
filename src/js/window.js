@@ -12,8 +12,10 @@ var sendNotification = function(title, message, iconUrl) {
 }
 
 chrome.notifications.onClicked.addListener(function(notificationId){
+  notificationInfo = sentNotifications[notificationId];
+  if (!notificationInfo) { return; }
   webview.executeScript({
-    code: "location.href = '" + sentNotifications[notificationId]['userpath'] + "'"
+    code: "location.href = '" + notificationInfo['userpath'] + "'"
   });
 });
 
