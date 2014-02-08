@@ -70,33 +70,19 @@ var watchIndex = function() {
 }
 
 var autoProgressEnabled = false;
-var startProgress = function() {
-  autoProgressEnabled = true;
-  count = 1
-  countDownId = setInterval(function(){
-    if (!autoProgressEnabled) {
-      clearInterval(countDownId);
-      NProgress.done();
-      return;
-    }
-    NProgress.set(count/10.0);
-    count++;
-    if (count > 10) {
-      clearInterval(countDownId);
-    }
-  }, 1000);
-}
-var stopProgress = function() {
-  autoProgressEnabled = false;
-}
 
 window.onresize = resizeContent;
 window.onload = function() {
   resizeContent;
   webview = document.getElementById("webview");
   document.addEventListener("keydown" , function(event) {
+    if (autoZappingEnabled) {
+      autoZappingEnabled = false;
+      NProgress.done();
+      return;
+    }
+
     var key = event.keyCode || event.charCode || 0;
-    // if (!event.ctrlKey && !event.metaKey) { return; }
 
     // whole the app
     if (event.ctrlKey || event.metaKey) {
@@ -110,10 +96,7 @@ window.onload = function() {
         });
         break;
       case 84: // Ctrl(Command) + T: auto reflesh
-        if (autoZappingEnabled) {
-          autoZappingEnabled = false;
-          stopProgress();
-        } else {
+        if (!autoZappingEnabled) {
           autoZappingEnabled = true;
           webview.executeScript({
             code: "location.href = '/zapping'"
@@ -138,11 +121,8 @@ window.onload = function() {
       });
       break;
     case 68: //  D: did read
-      NProgress.start();
       webview.executeScript({
         code: "document.getElementsByClassName('post-star')[0].click();"
-      }, function(result) {
-        NProgress.done();
       });
       break;
     case 78: // new button
@@ -183,8 +163,9 @@ window.onload = function() {
   });
   webview.addEventListener("loadstop", function() {
     if (autoZappingEnabled) {
-      startProgress();
+      NProgress.start();
       setTimeout(function() {
+      NProgress.set(0.0);
         if (!autoZappingEnabled) { return; }
         webview.executeScript({
           code: "document.getElementsByClassName('zapping-button')[0].getElementsByTagName('a')[0].click();"
