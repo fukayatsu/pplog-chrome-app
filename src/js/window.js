@@ -76,12 +76,25 @@ window.onload = function() {
     var key = event.keyCode || event.charCode || 0;
     // if (!event.ctrlKey && !event.metaKey) { return; }
 
-    if (event.target.id != 'app_body') { return; }
+    // whole the app
+    if (event.ctrlKey || event.metaKey) {
+      switch(key) {
+      case 82: // Ctrl(Command) + R: reload
+        webview.reload();
+        break;
+      case 83: // Ctrl(Command) + S: subscribe
+        webview.executeScript({
+          code: "document.getElementsByClassName('follow')[0].click();"
+        });
+        break;
+      case 84: // Ctrl(Command) + T: auto reflesh
+        console.log('TODO auto relfesh start')
+      }
+    }
 
+    // only on app_body
+    if (event.target.id != 'app_body') { return; }
     switch(key) {
-    case 82: //  R: reload
-      webview.reload();
-      break;
     case 70: //  F: zapping
     case 90: //  Z: zapping
       webview.executeScript({
