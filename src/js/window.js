@@ -29,6 +29,7 @@ var resizeContent = function() {
 var lastCheckedAt = new Date().getTime();
 var sentNotifications = {}
 var webview = null;
+var autoZappingEnabled = false;
 
 var watchIndex = function() {
   sentNotifications = {}
@@ -68,6 +69,27 @@ var watchIndex = function() {
   });
 }
 
+var autoProgressEnabled = false;
+var startProgress = function() {
+  autoProgressEnabled = true;
+  count = 1
+  countDownId = setInterval(function(){
+    if (!autoProgressEnabled) {
+      clearInterval(countDownId);
+      NProgress.done();
+      return;
+    }
+    NProgress.set(count/10.0);
+    count++;
+    if (count > 10) {
+      clearInterval(countDownId);
+    }
+  }, 1000);
+}
+var stopProgress = function() {
+  autoProgressEnabled = false;
+}
+
 window.onresize = resizeContent;
 window.onload = function() {
   resizeContent;
@@ -76,12 +98,34 @@ window.onload = function() {
     var key = event.keyCode || event.charCode || 0;
     // if (!event.ctrlKey && !event.metaKey) { return; }
 
-    if (event.target.id != 'app_body') { return; }
+    // whole the app
+    if (event.ctrlKey || event.metaKey) {
+      switch(key) {
+      case 82: // Ctrl(Command) + R: reload
+        webview.reload();
+        break;
+      case 83: // Ctrl(Command) + S: subscribe
+        webview.executeScript({
+          code: "document.getElementsByClassName('follow')[0].click();"
+        });
+        break;
+      case 84: // Ctrl(Command) + T: auto reflesh
+        if (autoZappingEnabled) {
+          autoZappingEnabled = false;
+          stopProgress();
+        } else {
+          autoZappingEnabled = true;
+          webview.executeScript({
+            code: "location.href = '/zapping'"
+          });
+        }
+        break;
+      }
+    }
 
+    // only on app_body
+    if (event.target.id != 'app_body') { return; }
     switch(key) {
-    case 82: //  R: reload
-      webview.reload();
-      break;
     case 70: //  F: zapping
     case 90: //  Z: zapping
       webview.executeScript({
@@ -130,8 +174,26 @@ window.onload = function() {
     window.open(e.targetUrl)
   });
 
-  webview.addEventListener("loadstart", NProgress.start);
-  webview.addEventListener("loadstop", NProgress.done);
+  webview.addEventListener("loadstart", function() {
+    if (autoZappingEnabled) {
+      // do nothing
+    } else {
+      NProgress.start();
+    }
+  });
+  webview.addEventListener("loadstop", function() {
+    if (autoZappingEnabled) {
+      startProgress();
+      setTimeout(function() {
+        if (!autoZappingEnabled) { return; }
+        webview.executeScript({
+          code: "document.getElementsByClassName('zapping-button')[0].getElementsByTagName('a')[0].click();"
+        });
+      }, 10 * 1000);
+    } else {
+      NProgress.done();
+    }
+  });
 
   setInterval(watchIndex, 600 * 1000);
 }
