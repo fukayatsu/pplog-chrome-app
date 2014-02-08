@@ -29,6 +29,7 @@ var resizeContent = function() {
 var lastCheckedAt = new Date().getTime();
 var sentNotifications = {}
 var webview = null;
+var zappingIntervalId = null;
 
 var watchIndex = function() {
   sentNotifications = {}
@@ -68,6 +69,30 @@ var watchIndex = function() {
   });
 }
 
+var autoProgressEnabled = false;
+var startProgress = function(enabled) {
+  if (enabled) { autoProgressEnabled = true }
+  count = 1
+  countDownId = setInterval(function(){
+    if (!autoProgressEnabled) {
+      clearInterval(countDownId);
+      // NProgress.remove();
+      NProgress.done();
+      return;
+    }
+    NProgress.set(count/10.0);
+    // console.log(count);
+    count++;
+    if (count > 10) {
+      clearInterval(countDownId);
+      if (autoProgressEnabled) { startProgress(); }
+    }
+  }, 1000);
+}
+var stopProgress = function() {
+  autoProgressEnabled = false;
+}
+
 window.onresize = resizeContent;
 window.onload = function() {
   resizeContent;
@@ -88,7 +113,7 @@ window.onload = function() {
         });
         break;
       case 84: // Ctrl(Command) + T: auto reflesh
-        console.log('TODO auto relfesh start')
+        break;
       }
     }
 
