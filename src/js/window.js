@@ -29,7 +29,7 @@ var resizeContent = function() {
 var lastCheckedAt = new Date().getTime();
 var sentNotifications = {}
 var webview = null;
-var zappingIntervalId = null;
+var autoZappingEnabled = false;
 
 var watchIndex = function() {
   sentNotifications = {}
@@ -70,22 +70,19 @@ var watchIndex = function() {
 }
 
 var autoProgressEnabled = false;
-var startProgress = function(enabled) {
-  if (enabled) { autoProgressEnabled = true }
+var startProgress = function() {
+  autoProgressEnabled = true;
   count = 1
   countDownId = setInterval(function(){
     if (!autoProgressEnabled) {
       clearInterval(countDownId);
-      // NProgress.remove();
       NProgress.done();
       return;
     }
     NProgress.set(count/10.0);
-    // console.log(count);
     count++;
     if (count > 10) {
       clearInterval(countDownId);
-      if (autoProgressEnabled) { startProgress(); }
     }
   }, 1000);
 }
@@ -113,6 +110,15 @@ window.onload = function() {
         });
         break;
       case 84: // Ctrl(Command) + T: auto reflesh
+        if (autoZappingEnabled) {
+          autoZappingEnabled = false;
+          stopProgress();
+        } else {
+          autoZappingEnabled = true;
+          webview.executeScript({
+            code: "location.href = '/zapping'"
+          });
+        }
         break;
       }
     }
@@ -168,8 +174,26 @@ window.onload = function() {
     window.open(e.targetUrl)
   });
 
-  webview.addEventListener("loadstart", NProgress.start);
-  webview.addEventListener("loadstop", NProgress.done);
+  webview.addEventListener("loadstart", function() {
+    if (autoZappingEnabled) {
+      // do nothing
+    } else {
+      NProgress.start();
+    }
+  });
+  webview.addEventListener("loadstop", function() {
+    if (autoZappingEnabled) {
+      startProgress();
+      setTimeout(function() {
+        if (!autoZappingEnabled) { return; }
+        webview.executeScript({
+          code: "document.getElementsByClassName('zapping-button')[0].getElementsByTagName('a')[0].click();"
+        });
+      }, 10 * 1000);
+    } else {
+      NProgress.done();
+    }
+  });
 
   setInterval(watchIndex, 600 * 1000);
 }
