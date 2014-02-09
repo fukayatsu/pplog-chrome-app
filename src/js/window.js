@@ -33,19 +33,19 @@ var autoZappingEnabled = false;
 
 var watchIndex = function() {
   sentNotifications = {}
-  console.log('fetch index start');
+  console.log('fetch index start ' + new Date());
   NProgress.start();
   webview.executeScript({
     code: "xmlHttp = new XMLHttpRequest(); xmlHttp.open('GET', 'https://www.pplog.net/', false); xmlHttp.send(null); xmlHttp.responseText;"
   }, function(result) {
-    console.log('fetch index done');
+    console.log('fetch index done' + new Date());
     NProgress.done();
     var html     = result[0];
     var posts    = $('li.user.post-index', html.replace(/src/g, 'data-src'));
     posts.each(function(){
       var post = $(this);
       var createdAt = post.find('.created-at').text().replace(/年|月/g, '/').replace(/日\(.\)/g, '')
-      var timestamp = Date.parse(createdAt);
+      var timestamp = Date.parse(createdAt + " GMT+0900");
       if (timestamp < lastCheckedAt) {
         return true; // continue;
       }
@@ -59,6 +59,7 @@ var watchIndex = function() {
         message: title,
         iconUrl: "/image/icon_128.png" // TODO: load image via xhr
       }
+      console.log(notification, new Date());
       chrome.notifications.create("", notification, function(notificationId){
         sentNotifications[notificationId] = {
           userpath: userpath
