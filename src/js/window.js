@@ -79,8 +79,7 @@ window.onload = function() {
   document.addEventListener("keydown" , function(event) {
     if (autoZappingEnabled) {
       autoZappingEnabled = false;
-      NProgress.done();
-      return;
+      return event.preventDefault();
     }
 
     var key = event.keyCode || event.charCode || 0;
@@ -156,24 +155,17 @@ window.onload = function() {
   });
 
   webview.addEventListener("loadstart", function() {
-    if (autoZappingEnabled) {
-      // do nothing
-    } else {
-      NProgress.start();
-    }
+    NProgress.start();
   });
   webview.addEventListener("loadstop", function() {
+    NProgress.done();
     if (autoZappingEnabled) {
-      NProgress.start();
       setTimeout(function() {
-      NProgress.set(0.0);
         if (!autoZappingEnabled) { return; }
         webview.executeScript({
           code: "document.getElementsByClassName('zapping-button')[0].getElementsByTagName('a')[0].click();"
         });
       }, 10 * 1000);
-    } else {
-      NProgress.done();
     }
   });
 
