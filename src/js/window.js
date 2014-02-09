@@ -157,15 +157,29 @@ window.onload = function() {
   webview.addEventListener("loadstart", function() {
     NProgress.start();
   });
+
+  countDownTimer = null;
   webview.addEventListener("loadstop", function() {
     NProgress.done();
     if (autoZappingEnabled) {
-      setTimeout(function() {
+      var count = 1;
+      clearInterval(countDownTimer);
+      countDownTimer = setInterval(function() {
         if (!autoZappingEnabled) { return; }
-        webview.executeScript({
-          code: "document.getElementsByClassName('zapping-button')[0].getElementsByTagName('a')[0].click();"
-        });
-      }, 10 * 1000);
+        if (count <= 10) {
+          webview.executeScript({
+            // webkitTransformOriginが効かない...
+            code: "button=document.getElementsByClassName('zapping-button')[0]; button.style.webkitTransformOrigin = 'center center'; button.style.WebkitTransform = 'rotate(" + count * 36 + "deg)';"
+          });
+          count++;
+          // console.log(count);
+        } else {
+          clearInterval(countDownTimer);
+          webview.executeScript({
+            code: "document.getElementsByClassName('zapping-button')[0].getElementsByTagName('a')[0].click();"
+          });
+        }
+      }, 1000);
     }
   });
 
