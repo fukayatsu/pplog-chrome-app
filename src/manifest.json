@@ -1,7 +1,8 @@
 {
-  "name": "pplog",
-  "description": "pplog",
-  "version": "0.0.13",
+  "name": "pplog (yurufuwa)",
+  "short_name": "pplog (yurufuwa)",
+  "description": "pplog.netのゆるふわな非公式クライアントアプリです。",
+  "version": "0.0.14",
   "app": {
     "background": {
       "scripts": [
@@ -18,5 +19,6 @@
     "16": "image/icon_16.png",
     "128": "image/icon_128.png"
   },
-  "offline_enabled": false
+  "offline_enabled": false,
+  "author": "fukayatsu"
 }
