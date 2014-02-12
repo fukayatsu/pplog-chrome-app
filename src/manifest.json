@@ -2,7 +2,7 @@
   "name": "pplog (yurufuwa)",
   "short_name": "pplog (yurufuwa)",
   "description": "pplog.netのゆるふわな非公式クライアントアプリです。",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "app": {
     "background": {
       "scripts": [
