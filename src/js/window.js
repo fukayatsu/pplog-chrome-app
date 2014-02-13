@@ -169,6 +169,7 @@ window.onload = function() {
         var path = $(post.find('.user-name a')[0]).attr('href');
         webview.executeScript({ code: "location.href='" + path + "';" }, function(){
           NProgress.done();
+          chrome.app.window.current().focus();
         });
       });
     }
