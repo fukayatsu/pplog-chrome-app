@@ -11,15 +11,6 @@ var sendNotification = function(title, message, iconUrl) {
   });
 }
 
-// chrome.notifications.onClicked.addListener(function(notificationId){
-//   notificationInfo = sentNotifications[notificationId];
-//   if (!notificationInfo) { return; }
-//   webview.executeScript({
-//     code: "location.href = '" + notificationInfo['userpath'] + "'"
-//   });
-//   chrome.app.window.current().focus();
-// });
-
 var resizeContent = function() {
   var content = document.getElementById('content');
   content.style.width  = (window.document.documentElement.clientWidth  - 16) + 'px'
@@ -30,45 +21,6 @@ var lastCheckedAt = new Date().getTime();
 var sentNotifications = {}
 var webview = null;
 var autoZappingEnabled = false;
-
-// var watchIndex = function() {
-//   sentNotifications = {}
-//   console.log('fetch index start ' + new Date());
-//   NProgress.start();
-//   webview.executeScript({
-//     code: "xmlHttp = new XMLHttpRequest(); xmlHttp.open('GET', 'https://www.pplog.net/', false); xmlHttp.send(null); xmlHttp.responseText;"
-//   }, function(result) {
-//     console.log('fetch index done' + new Date());
-//     NProgress.done();
-//     var html     = result[0];
-//     var posts    = $('li.user.post-index', html.replace(/src/g, 'data-src'));
-//     posts.each(function(){
-//       var post = $(this);
-//       var createdAt = post.find('.created-at').text().replace(/年|月/g, '/').replace(/日\(.\)/g, '')
-//       var timestamp = Date.parse(createdAt + " GMT+0900");
-//       if (timestamp < lastCheckedAt) {
-//         return true; // continue;
-//       }
-//       var title     = post.find('.title').text().trim()
-//       var image     = $(post.find('img')[0]).attr('data-src');
-//       var username  = $(post.find('.user-name a')[0]).text();
-//       var userpath  = $(post.find('.user-name a')[0]).attr('href');
-//       var notification = {
-//         type:    "basic",
-//         title:   username,
-//         message: title,
-//         iconUrl: "/image/icon_128.png" // TODO: load image via xhr
-//       }
-//       console.log(notification, new Date());
-//       chrome.notifications.create("", notification, function(notificationId){
-//         sentNotifications[notificationId] = {
-//           userpath: userpath
-//         }
-//       });
-//     });
-//     lastCheckedAt = new Date().getTime();
-//   });
-// }
 
 window.onresize = resizeContent;
 window.onload = function() {
@@ -156,25 +108,6 @@ window.onload = function() {
     NProgress.start();
   });
 
-  webview.addEventListener('consolemessage', function(e) {
-    if (e.message == "Uncaught TypeError: Object #<WebKitNotification> has no method 'close'") {
-      // TODO pusher対応までの応急処置
-      NProgress.start();
-      webview.executeScript({
-        code: "xmlHttp = new XMLHttpRequest(); xmlHttp.open('GET', 'https://www.pplog.net/', false); xmlHttp.send(null); xmlHttp.responseText;"
-      }, function(result) {
-        var html     = result[0];
-        var posts    = $('li.user.post-index', html.replace(/src/g, 'data-src'));
-        var post     = $(posts[0]);
-        var path = $(post.find('.user-name a')[0]).attr('href');
-        webview.executeScript({ code: "location.href='" + path + "';" }, function(){
-          NProgress.done();
-          chrome.app.window.current().focus();
-        });
-      });
-    }
-  });
-
   countDownTimer = null;
   webview.addEventListener("loadstop", function() {
     NProgress.done();
@@ -200,5 +133,4 @@ window.onload = function() {
     }
   });
 
-  // setInterval(watchIndex, 600 * 1000);
 }
